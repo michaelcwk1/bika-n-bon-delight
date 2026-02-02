@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import IntroScreen from "@/components/IntroScreen";
 import Navbar from "@/components/Navbar";
@@ -18,30 +18,14 @@ const Index = () => {
 
   const handleIntroComplete = () => {
     setShowIntro(false);
-    setTimeout(() => setShowContent(true), 100);
+    // Small delay before showing content for smooth transition
+    setTimeout(() => setShowContent(true), 50);
   };
-
-  // Skip intro if already visited in this session
-  useEffect(() => {
-    const hasVisited = sessionStorage.getItem("bikanbon-visited");
-    if (hasVisited) {
-      setShowIntro(false);
-      setShowContent(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!showIntro) {
-      sessionStorage.setItem("bikanbon-visited", "true");
-    }
-  }, [showIntro]);
 
   return (
     <>
-      {/* Intro Screen */}
-      <AnimatePresence>
-        {showIntro && <IntroScreen onComplete={handleIntroComplete} />}
-      </AnimatePresence>
+      {/* Intro Screen - Always shows on refresh */}
+      {showIntro && <IntroScreen onComplete={handleIntroComplete} />}
 
       {/* Main Content */}
       <AnimatePresence>
@@ -49,17 +33,29 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
           >
             <Navbar />
             <main>
-              <HeroSection />
-              <AboutSection />
-              <WhyChooseUsSection />
-              <ProductCatalogSection />
-              <TestimonialsSection />
-              <OrderFlowSection />
-              <CTABannerSection />
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.32, 0.72, 0, 1] }}
+              >
+                <HeroSection />
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <AboutSection />
+                <WhyChooseUsSection />
+                <ProductCatalogSection />
+                <TestimonialsSection />
+                <OrderFlowSection />
+                <CTABannerSection />
+              </motion.div>
             </main>
             <Footer />
             <FloatingWhatsApp />
