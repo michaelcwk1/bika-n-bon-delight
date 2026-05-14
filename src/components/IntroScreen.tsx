@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import bikaHero from "@/assets/bika-ambon-hero.png";
 
 interface IntroScreenProps {
@@ -7,24 +7,19 @@ interface IntroScreenProps {
 }
 
 const IntroScreen = ({ onComplete }: IntroScreenProps) => {
-  const [phase, setPhase] = useState<"idle" | "lifting" | "splitting" | "done">("idle");
+  const [phase, setPhase] = useState<"idle" | "splitting" | "done">("idle");
 
   const handleOpen = useCallback(() => {
     if (phase !== "idle") return;
     
-    // Phase 1: Bika spins and lifts
-    setPhase("lifting");
-    
-    // Phase 2: Screen splits after bika reaches top
-    setTimeout(() => {
-      setPhase("splitting");
-    }, 400);
+    // Phase 1: Bika spins, lifts, AND screen splits immediately together
+    setPhase("splitting");
 
-    // Phase 3: Complete and show content
+    // Phase 2: Complete and show content
     setTimeout(() => {
       setPhase("done");
       onComplete();
-    }, 1000);
+    }, 800);
   }, [phase, onComplete]);
 
   const handleSkip = useCallback(() => {
@@ -115,127 +110,114 @@ const IntroScreen = ({ onComplete }: IntroScreenProps) => {
       </motion.div>
 
       {/* Center Content Layer */}
-      <AnimatePresence>
-        {phase !== "splitting" && (
+      <motion.div
+        className="absolute inset-0 flex flex-col items-center justify-center z-10"
+        initial={{ opacity: 1 }}
+        animate={{ 
+          opacity: phase === "done" ? 0 : 1,
+          y: phase === "splitting" ? "-50vh" : 0
+        }}
+        transition={{ 
+          opacity: { duration: 0.3 },
+          y: { duration: 0.8, ease: [0.32, 0.72, 0, 1] }
+        }}
+      >
+        {/* Brand name */}
+        <motion.h1 
+          className="font-heading text-2xl md:text-3xl font-bold text-brown tracking-wide mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Bika N'Bon
+        </motion.h1>
+
+        {/* Bika Ambon image - clickable */}
+        <motion.button
+          onClick={handleOpen}
+          className="relative group cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-golden/50"
+          aria-label="Tap to open and enter website"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1,
+            rotate: phase === "splitting" ? 360 : 0,
+          }}
+          transition={{
+            opacity: { duration: 0.5, delay: 0.3 },
+            scale: { duration: 0.5, delay: 0.3 },
+            rotate: { duration: 0.8, ease: [0.32, 0.72, 0, 1] },
+          }}
+          whileHover={{ scale: phase === "idle" ? 1.05 : 1 }}
+          whileTap={{ scale: phase === "idle" ? 0.95 : 1 }}
+        >
+          {/* Outer glow - Oval shape like bika */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-80 rounded-full bg-gradient-to-r from-golden/30 via-golden/20 to-transparent blur-3xl group-hover:from-golden/50 group-hover:via-golden/30 transition-all duration-500" />
+          
+          {/* Subtle shadow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-72  " />
+          
+          {/* Pulsing ring - Oval shape like bika */}
           <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center z-10"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-64 rounded-full border-2 border-golden/30"
+            animate={{ 
+              scale: [1, 1.15, 1], 
+              opacity: [0.3, 0, 0.3] 
+            }}
+            transition={{ 
+              duration: 2, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
+          {/* Main image container - Oval shape like bika ambon */}
+          <div className="relative w-72 h-56 md:w-96 md:h-72 rounded-full overflow-hidden">
+            <img
+              src={bikaHero}
+              alt="Bika Ambon"
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Inner highlight */}
+            <div className="" />
+          </div>
+
+          {/* Bounce indicator */}
+          <motion.div
+            className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-2xl"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
           >
-            {/* Brand name */}
-            <motion.h1 
-              className="font-heading text-2xl md:text-3xl font-bold text-brown tracking-wide mb-8"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              Bika N'Bon
-            </motion.h1>
-
-            {/* Bika Ambon image - clickable */}
-            <motion.button
-              onClick={handleOpen}
-              className="relative group cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-golden/50 rounded-full"
-              aria-label="Tap to open and enter website"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: phase === "lifting" ? "-30vh" : 0,
-                rotate: phase === "lifting" ? 360 : 0,
-              }}
-              transition={{
-                opacity: { duration: 0.5, delay: 0.3 },
-                scale: { duration: 0.5, delay: 0.3 },
-                y: { duration: 0.5, ease: [0.32, 0.72, 0, 1] },
-                rotate: { duration: 0.5, ease: [0.32, 0.72, 0, 1] },
-              }}
-              whileHover={{ scale: phase === "idle" ? 1.05 : 1 }}
-              whileTap={{ scale: phase === "idle" ? 0.95 : 1 }}
-            >
-              {/* Outer glow */}
-              <div className="absolute inset-0 rounded-full bg-golden/20 blur-3xl scale-150 group-hover:bg-golden/40 transition-all duration-500" />
-              
-              {/* Subtle shadow */}
-              <div className="absolute inset-4 rounded-full bg-brown/20 blur-2xl translate-y-4" />
-              
-              {/* Pulsing ring on hover */}
-              <motion.div
-                className="absolute inset-0 rounded-full border-2 border-golden/40"
-                animate={{ 
-                  scale: [1, 1.15, 1], 
-                  opacity: [0.4, 0, 0.4] 
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-
-              {/* Main image container */}
-              <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-cream-light/80 shadow-elevated">
-                <img
-                  src={bikaHero}
-                  alt="Bika Ambon"
-                  className="w-full h-full object-cover"
-                />
-                
-                {/* Inner highlight */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-              </div>
-
-              {/* Bounce indicator */}
-              <motion.div
-                className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-2xl"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-              >
-                👆
-              </motion.div>
-            </motion.button>
-
-            {/* Instruction text */}
-            <motion.p
-              className="font-body text-brown/80 text-center text-base md:text-lg mt-10"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ 
-                opacity: phase === "idle" ? 1 : 0,
-                y: phase === "idle" ? 0 : -20
-              }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              Tap the Bika to Open
-            </motion.p>
-
-            {/* Keyboard hint */}
-            <motion.p
-              className="font-body text-brown/50 text-center text-xs mt-2 hidden md:block"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: phase === "idle" ? 1 : 0 }}
-              transition={{ delay: 0.7, duration: 0.5 }}
-            >
-              or press Enter / Space
-            </motion.p>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.button>
+
+        {/* Instruction text */}
+        <motion.p
+          className="font-body text-brown/80 text-center text-base md:text-lg mt-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ 
+            opacity: phase === "idle" ? 1 : 0,
+            y: phase === "idle" ? 0 : -20
+          }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          Tap the Bika to Open
+        </motion.p>
+
+        {/* Keyboard hint */}
+        <motion.p
+          className="font-body text-brown/50 text-center text-xs mt-2 hidden md:block"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: phase === "idle" ? 1 : 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          or press Enter / Space
+        </motion.p>
+      </motion.div>
 
       {/* Skip button */}
-      <motion.button
-        onClick={handleSkip}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 px-6 py-2 rounded-full bg-brown/10 hover:bg-brown/20 border border-brown/20 font-body text-sm text-brown/70 hover:text-brown transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-golden"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
-          opacity: phase === "idle" ? 1 : 0,
-          y: phase === "idle" ? 0 : 20
-        }}
-        transition={{ delay: 0.8, duration: 0.4 }}
-        aria-label="Skip intro and go to main page"
-      >
-        Skip Intro
-      </motion.button>
+    
 
       {/* Decorative corner patterns */}
       <div className="absolute top-4 left-4 w-12 h-12 border-l-2 border-t-2 border-brown/10 rounded-tl-lg pointer-events-none" />

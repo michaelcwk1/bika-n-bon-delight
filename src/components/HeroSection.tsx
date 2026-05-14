@@ -21,15 +21,14 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             {/* Badge */}
-            <motion.div
+            {/* <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-golden/10 border border-golden/20 mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <span className="text-sm">🍯</span>
               <span className="font-body text-sm font-medium text-brown">Premium Homemade</span>
-            </motion.div>
+            </motion.div> */}
 
             {/* Headline */}
             <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-brown leading-tight mb-6">
@@ -94,7 +93,7 @@ const HeroSection = () => {
           >
             {/* Glow behind image */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-80 h-80 md:w-96 md:h-96 bg-golden/20 rounded-full blur-3xl animate-pulse-soft" />
+              <div className="w-96 h-80 md:w-[500px] md:h-96 bg-golden/20 rounded-full blur-3xl animate-pulse-soft" />
             </div>
 
             {/* Main image */}
@@ -102,14 +101,14 @@ const HeroSection = () => {
               <motion.img
                 src={bikaHero}
                 alt="Bika Ambon Premium"
-                className="w-72 h-72 md:w-96 md:h-96 object-cover rounded-full shadow-elevated"
+                className="w-96 h-72 md:w-[500px] md:h-96 object-cover rounded-full  "
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               
               {/* Floating badge */}
               <motion.div
-                className="absolute -right-4 top-10 bg-cream-light rounded-2xl px-4 py-3 shadow-card"
+                className="absolute right-11 top-10 bg-cream-light rounded-2xl px-4 py-3 shadow-card"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1 }}
@@ -120,7 +119,7 @@ const HeroSection = () => {
 
               {/* Floating badge 2 */}
               <motion.div
-                className="absolute -left-4 bottom-10 bg-cream-light rounded-2xl px-4 py-3 shadow-card"
+                className="absolute left-16 bottom-16 bg-cream-light rounded-2xl px-4 py-3 shadow-card"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2 }}
